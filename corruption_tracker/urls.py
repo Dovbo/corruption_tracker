@@ -1,41 +1,42 @@
 """corruption_tracker URL Configuration"""
 
-from django.conf.urls import include, url, static
+from django.conf.urls import static
+from django.urls import path, include
 from django.conf import settings
-# from django.contrib import admin
+from django.conf.urls import i18n
 from django.contrib.gis import admin
 from django.views.static import serve
-from django.views.i18n import javascript_catalog
+from django.views.i18n import JavaScriptCatalog
 
 from corruption_tracker import views
+from api import urls as api_urls
 
 js_info_dict = {}
 
 urlpatterns = [
     # Rest API
-    url(r'^api/', include('api.urls')),
+    path('api/', include(api_urls.urlpatterns)),
 
-    url(r'^admin/', include(admin.site.urls)),
-    url(r'^i18n/', include('django.conf.urls.i18n')),
-    url(r'^jsi18n/$', javascript_catalog, js_info_dict, name='javascript-catalog'),
+    path('admin/', admin.site.urls),
+    path('i18n/', include(i18n.urlpatterns)),
+    path('jsi18n/', JavaScriptCatalog.as_view(), js_info_dict, name='javascript-catalog'),
 
-    url(r'^$', views.MapPageView.as_view(), name="single"),
+    path('', views.MapPageView.as_view(), name="single"),
 
-    url('', include('social.apps.django_app.urls', namespace='social')),
-    url(r'^login/$', views.LoginView.as_view(),
+    path('', include('social.apps.django_app.urls', namespace='social')),
+    path('login/', views.LoginView.as_view(),
         name='login'),
 
-    url(r'^logout/$', views.logout_user,
+    path('logout/', views.logout_user,
         name='logout'),
 
-    url(r'^static/(?P<path>.*)$', serve,
-        {'document_root': settings.STATIC_ROOT}),
+    path('static/<path>', serve, {'document_root': settings.STATIC_ROOT}),
 
 ] + static.static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
 
 if settings.DEBUG:
     urlpatterns += [
-        url(r'^profiling/$', views.profiling),
-        url(r'^press/', include('blog.urls')),
-        url(r'^user/', include('interaction.urls')),
+        # path(r'profiling/', views.profiling),
+        path(r'press/', include('blog.urls')),
+        path(r'user/', include('interaction.urls')),
     ]

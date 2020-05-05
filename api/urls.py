@@ -1,8 +1,12 @@
 
 from django.conf.urls import url, include
+from django.urls import path, include
 from rest_framework.routers import DefaultRouter
 
+
 from api import views, claim, geoinfo
+
+app_name = 'api'
 
 
 class CustomRouter(DefaultRouter):
@@ -20,25 +24,25 @@ class CustomRouter(DefaultRouter):
 router = CustomRouter()
 
 router.register(r'sign_up', views.SignUp,
-                base_name='sign_up')
+                'sign_up')
 router.register(r'claim', claim.ClaimViewSet,
-                base_name='claims')
+                'claims')
 router.register(r'organization', claim.OrganizationViewSet,
-                base_name='organizations')
+                'organizations')
 router.register(r'polygon', geoinfo.PolygonViewSet,
-                base_name='polygon')
+                'polygon')
 router.register(r'polygon/get_nearest', geoinfo.GetNearestPolygons,
-                base_name='get_nearest')
+                'get_nearest')
 router.register(r'polygon/fit_bounds', geoinfo.FitBoundsPolygons,
-                base_name='fit_bounds')
+                'fit_bounds')
 router.register(r'polygon/check_in', geoinfo.CheckInPolygon,
-                base_name='check_in')
+                'check_in')
 router.register(r'polygon/get_tree', geoinfo.GetPolygonsTree,
-                base_name='get_polygons')
+                'get_polygons')
 router.register(r'update', views.GetUpdatedViewSet,
-                base_name='updated')
+                'updated')
+
 
 urlpatterns = [
-    url(r'^docs/', include('rest_framework_swagger.urls')),
-    url(r'', include('oauth2_provider.urls', namespace='oauth2_provider')),
+    path('', include('oauth2_provider.urls', namespace='oauth2_provider')),
 ] + router.urls

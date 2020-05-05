@@ -1,4 +1,5 @@
-{% load staticfiles %} {% load i18n %}
+{% load static %}
+{% load i18n %}
 <nav id="nav" class="navbar navbar-default transparent-module bar">
     <div class="container-fluid">
         <div class="row">
@@ -23,7 +24,7 @@
                                 {% trans "Tools " %}<b class="caret"></b></a>
                             <ul class="dropdown-menu transparent-module">
                                 <li><a href="#" data-toggle="collapse" data-target=".navbar-collapse.in" id="addorg-btn">{% trans "Add organization" %}</a></li>
-                                <li><a href="api/docs" target="_blank">{% trans "API Docs" %}</a></li>
+                                <li><a href="api/" target="_blank">{% trans "API Docs" %}</a></li>
                             </ul>
                         </li>
                         <li class="dropdown">

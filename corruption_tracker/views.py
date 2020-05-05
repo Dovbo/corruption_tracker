@@ -1,16 +1,15 @@
 from pprint import pprint
 import json
 
-
 from django.conf import settings
 from django.http import HttpResponseRedirect
-from django.shortcuts import render, render_to_response
+from django.shortcuts import render
 from django.contrib.auth import authenticate, login, logout
 # from django.contrib.auth.forms import AuthenticationForm
 from django.contrib.gis.geoip2 import GeoIP2
 from django.utils.safestring import mark_safe
 from django.views.generic import View
-from django.core.urlresolvers import reverse
+from django.shortcuts import reverse
 from django.core.cache import cache
 # from django.utils.translation import ugettext as _
 
@@ -18,7 +17,7 @@ from geoip2.errors import AddressNotFoundError
 
 from utils.common import get_client_ip
 from claim.models import OrganizationType
-from corruption_tracker.middleware import SqlProfilingMiddleware
+# from corruption_tracker.middleware import SqlProfilingMiddleware
 
 
 class MapPageView(View):
@@ -37,7 +36,7 @@ class MapPageView(View):
             claim_type_set = []
             for claim_type in org_type.claimtype_set.all():
                 claim_type_set.append({'id': claim_type.id,
-                                      'value': claim_type.name})
+                                       'value': claim_type.name})
             claim_type_sets[org_type.type_id] = claim_type_set
 
         resp_dict['claim_types'] = mark_safe(json.dumps(claim_type_sets))
@@ -105,6 +104,6 @@ def logout_user(request):
     return HttpResponseRedirect('/')
 
 
-def profiling(request):
-    return render_to_response(
-        "profiling.html", {"queries": SqlProfilingMiddleware.Queries})
+# def profiling(request):
+#     return render(
+#         "profiling.html", {"queries": SqlProfilingMiddleware.Queries})

@@ -3,7 +3,7 @@ from django.db import models
 
 from rest_framework.response import Response
 from rest_framework import viewsets, mixins, filters, status
-from rest_framework.decorators import list_route, detail_route
+from rest_framework.decorators import action
 
 from claim.models import Claim, Organization,\
     OrganizationType
@@ -14,7 +14,7 @@ from api.serializers import ClaimSerializer,\
 from api.permissions import CanPost, PostThrottle
 
 
-class ClaimViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
+class ClaimViewSet(mixins.CreateModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
     """
     API endpoint for listing and creating Claims.
 
@@ -52,7 +52,7 @@ class ClaimViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
     throttle_classes = (PostThrottle,)
     lookup_field = 'id'
 
-    @detail_route()
+    @action(detail=True)
     def user(self, request, id=None):
         queryset = self.queryset.filter(complainer__id=id)
         serializer = self.get_serializer(queryset, many=True)
@@ -65,9 +65,9 @@ class ClaimViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    def retrieve(self, request, id=None):
-        # queryset = self.queryset.filter(organization__id=id)
-        organization = Organization.objects.get(id=id)
+    def retrieve(self, request, *args, **kwargs):
+        org_id = kwargs.get('id', None)
+        organization = Organization.objects.get(id=org_id)
         queryset = organization.moderation_filter(
             ).select_related().annotate(num_c=models.Count(
                 'complainer__claim')).order_by('created')
@@ -81,7 +81,7 @@ class ClaimViewSet(mixins.CreateModelMixin, viewsets.GenericViewSet):
         return Response(serializer.data)
 
     def perform_create(self, serializer):
-        if self.request.user.is_anonymous() or self.request.data.get('anonymously', None):
+        if self.request.user.is_anonymous or self.request.data.get('anonymously', None):
             serializer.save(moderation='anonymous')
         else:
             serializer.save(complainer=self.request.user)
@@ -134,7 +134,7 @@ class OrganizationViewSet(mixins.CreateModelMixin, mixins.ListModelMixin,
     filter_backends = (filters.SearchFilter,)
     search_fields = ('name',)
 
-    @list_route()
+    @action(detail=False)
     def orgtypes(self, request):
         org_types = OrganizationType.objects.all()
         serializer = OrganizationTypeSerializer(org_types, many=True)

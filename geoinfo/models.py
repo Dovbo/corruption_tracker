@@ -43,7 +43,8 @@ class Polygon(models.Model):
     shape = models.PolygonField(null=True, blank=True)
     centroid = models.PointField(null=True, blank=True)
     address = models.CharField(max_length=800, null=True, blank=True)
-    layer = models.ForeignKey('self', blank=True, null=True)
+    layer = models.ForeignKey(
+        'self', blank=True, null=True, on_delete=models.DO_NOTHING)
 
     # Polygon as layer
     country = 0
@@ -68,8 +69,6 @@ class Polygon(models.Model):
     zoom = models.IntegerField(blank=True, null=True)
 
     claims = models.IntegerField(default=0)
-
-    objects = models.GeoManager()
 
     # moderation_filter
     @property

@@ -3,7 +3,7 @@ import datetime
 
 from rest_framework import viewsets, mixins
 from rest_framework.response import Response
-from rest_framework.decorators import detail_route
+from rest_framework.decorators import action
 
 from geoinfo.models import Polygon
 from claim.models import Organization
@@ -81,7 +81,7 @@ class GetUpdatedViewSet(viewsets.GenericViewSet):
     lookup_value_regex = '\d{4}-\d{2}-\d{2}'
     lookup_field = 'date'
 
-    @detail_route()
+    @action(detail=True)
     def polygon(self, request, date=None):
 
         start_date = datetime.datetime.strptime(date, '%Y-%m-%d')
@@ -96,7 +96,7 @@ class GetUpdatedViewSet(viewsets.GenericViewSet):
         serializer = self.get_serializer(queryset, many=True)
         return Response(serializer.data)
 
-    @detail_route()
+    @action(detail=True)
     def organization(self, request, date=None):
         start_date = datetime.datetime.strptime(date, '%Y-%m-%d')
         queryset = Organization.objects.filter(updated__gte=start_date, is_verified=True)

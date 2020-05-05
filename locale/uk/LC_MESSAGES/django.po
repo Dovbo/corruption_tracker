@@ -100,7 +100,7 @@ msgstr ""
 #: templates/modals/add_objects_modal.html:8
 #: templates/modals/claims_modal.html:44
 msgid "Add claim"
-msgstr "Викрити зраду"
+msgstr " Додати скаргу"
 
 #: templates/modals/add_objects_modal.html:11
 msgid "Processing"
@@ -218,13 +218,17 @@ msgstr "Зареєструватися"
 msgid "Who is here?"
 msgstr "Хто тут?"
 
-#: templates/navigation.html:44
+#: templates/navigation.html:24
 msgid "Tools "
 msgstr "Інше"
 
+#: templates/navigation.html:32
+msgid "My profile "
+msgstr "Мій профайл"
+
 #: templates/navigation.html:48
 msgid "API Docs"
-msgstr ""
+msgstr "API Документи"
 
 #: templates/navigation.html:54
 msgid "Logout"

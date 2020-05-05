@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load staticfiles %}
+{% load static %}
 {% load leaflet_tags %}
 {% load i18n %}
 
@@ -66,8 +66,8 @@
                 "fitextent": true, 
                 "tilesextent": [], 
                 "layers": [
-                    ["Hydda", "http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png", 
-                        {"attribution": "Tiles courtesy of <a href=\"http://openstreetmap.se/\" target=\"_blank\">OpenStreetMap Sweden</a> &mdash; Map data &copy; <a href=\"http://www.openstreetmap.org/copyright\">OpenStreetMap</a>"}]],
+                    ["Voyager", "https://{s}.basemaps.cartocdn.com/rastertiles/voyager/{z}/{x}/{y}.png",
+                        {"attribution": '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors &copy; <a href="https://carto.com/attributions">CARTO</a>'}]],
                 "minimap": false, 
                 "overlays": [], 
                 "maxzoom": null, 

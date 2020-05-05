@@ -8,7 +8,6 @@ from django.utils.translation import ugettext_lazy as _
 
 BASE_DIR = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
 
-
 # Application definition
 
 INSTALLED_APPS = (
@@ -24,9 +23,10 @@ INSTALLED_APPS = (
     'social.apps.django_app.default',
     'oauth2_provider',
     'rest_framework',
-    'rest_framework_swagger',
+    'drf_yasg',
     'leaflet',
     'corsheaders',
+    'social_django',
 
     'corruption_tracker',
     'claim',
@@ -37,14 +37,29 @@ INSTALLED_APPS = (
 )
 
 MIDDLEWARE_CLASSES = (
-    'corruption_tracker.middleware.SqlProfilingMiddleware',
+    # 'corruption_tracker.middleware.SqlProfilingMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.locale.LocaleMiddleware',
     'corsheaders.middleware.CorsMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
-    'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'oauth2_provider.middleware.OAuth2TokenMiddleware',
+    'django.contrib.messages.middleware.MessageMiddleware',
+    'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'django.middleware.security.SecurityMiddleware',
+)
+
+MIDDLEWARE = (
+    # 'corruption_tracker.middleware.SqlProfilingMiddleware',
+    'django.contrib.sessions.middleware.SessionMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
+    'corsheaders.middleware.CorsMiddleware',
+    'django.middleware.common.CommonMiddleware',
+    'django.middleware.csrf.CsrfViewMiddleware',
+    'django.contrib.auth.middleware.AuthenticationMiddleware',
+    # 'django.contrib.auth.middleware.SessionAuthenticationMiddleware',
     # 'oauth2_provider.middleware.OAuth2TokenMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
@@ -52,21 +67,24 @@ MIDDLEWARE_CLASSES = (
 )
 
 AUTHENTICATION_BACKENDS = (
-    'social.backends.facebook.FacebookOAuth2',
-    'oauth2_provider.backends.OAuth2Backend',
+    # 'social.backends.facebook.FacebookOAuth2',
+    # 'oauth2_provider.backends.OAuth2Backend',
     'django.contrib.auth.backends.ModelBackend',
 )
 
 REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
-        'oauth2_provider.ext.rest_framework.OAuth2Authentication',
+        # 'oauth2_provider.ext.rest_framework.OAuth2Authentication',
         'rest_framework.authentication.SessionAuthentication',
     ),
     'DEFAULT_PERMISSION_CLASSES': (
         'rest_framework.permissions.AllowAny',
     ),
-   'PAGE_SIZE': 50,
-   # 'URL_FORMAT_OVERRIDE': None,
+    'PAGE_SIZE': 50,
+    # 'URL_FORMAT_OVERRIDE': None,
+    'DEFAULT_PAGINATION_CLASS': 'rest_framework.pagination.PageNumberPagination',
+    'DEFAULT_SCHEMA_CLASS': 'rest_framework.schemas.coreapi.AutoSchema'
+
 }
 
 ROOT_URLCONF = 'corruption_tracker.urls'
@@ -112,7 +130,6 @@ STATICFILES_DIRS = (
 )
 MEDIA_URL = '/media/'
 
-
 SITE_ID = 1
 LOGIN_REDIRECT_URL = '/'
 
@@ -129,52 +146,48 @@ INIT_GEOJSON_FOLDER = os.path.join(BASE_DIR, 'init_geo_data')
 
 LEAFLET_CONFIG = {
     'RESET_VIEW': False,
-	'PLUGINS': {
-	'fontawesome': {
-        'css': 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css',
-        'auto-include': True
-    },	
-    'geolocation': {
-        'css': 'https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css',
-        'js': 'https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js', 
-        'auto-include': True
-    }  
-	},	
-    'TILES': [('Hydda', 'http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png',
-                            {'attribution':
-                            'Tiles courtesy of <a href="http://openstreetmap.se/" '
-                            'target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; '
-                            '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
-                            }),
+    'PLUGINS': {
+        'fontawesome': {
+            'css': 'https://maxcdn.bootstrapcdn.com/font-awesome/4.4.0/css/font-awesome.min.css',
+            'auto-include': True
+        },
+        'geolocation': {
+            'css': 'https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.css',
+            'js': 'https://api.tiles.mapbox.com/mapbox.js/plugins/leaflet-locatecontrol/v0.43.0/L.Control.Locate.min.js',
+            'auto-include': True
+        }
+    },
+    'TILES': [
+        ('Hydda', 'http://{s}.tile.openstreetmap.se/hydda/full/{z}/{x}/{y}.png',
+         {'attribution':
+              'Tiles courtesy of <a href="http://openstreetmap.se/" '
+              'target="_blank">OpenStreetMap Sweden</a> &mdash; Map data &copy; '
+              '<a href="http://www.openstreetmap.org/copyright">OpenStreetMap</a>'
+          }),
 
-              ('Streets', 'http://server.arcgisonline.com/ArcGIS/rest/'
-                             'services/World_Street_Map/MapServer/tile/'
-                             '{z}/{y}/{x}',
-                             {'attribution':
-                              'Tiles &copy; Esri &mdash; Source: Esri, '
-                              'DeLorme, NAVTEQ, USGS, Intermap, iPC, '
-                              'NRCAN, Esri Japan, METI, Esri China (Hong Kong)'
-                              ', Esri (Thailand), TomTom, 2012'}),
+        ('Streets', 'http://server.arcgisonline.com/ArcGIS/rest/'
+                    'services/World_Street_Map/MapServer/tile/'
+                    '{z}/{y}/{x}',
+         {'attribution':
+              'Tiles &copy; Esri &mdash; Source: Esri, '
+              'DeLorme, NAVTEQ, USGS, Intermap, iPC, '
+              'NRCAN, Esri Japan, METI, Esri China (Hong Kong)'
+              ', Esri (Thailand), TomTom, 2012'}),
 
-              ('Satellite', 'http://server.arcgisonline.com/ArcGIS/rest/'
-                               'services/World_Imagery/MapServer/tile/'
-                               '{z}/{y}/{x}',
-                               {'attribution':
-                                'Tiles &copy; Esri &mdash; Source: Esri, '
-                                'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping,'
-                                ' Aerogrid, IGN, IGP, UPR-EGP, and the GIS'
-                                ' User Community'})]
+        ('Satellite', 'http://server.arcgisonline.com/ArcGIS/rest/'
+                      'services/World_Imagery/MapServer/tile/'
+                      '{z}/{y}/{x}',
+         {'attribution':
+              'Tiles &copy; Esri &mdash; Source: Esri, '
+              'i-cubed, USDA, USGS, AEX, GeoEye, Getmapping,'
+              ' Aerogrid, IGN, IGP, UPR-EGP, and the GIS'
+              ' User Community'})]
 
 }
 
 GEOIP_PATH = os.path.join(BASE_DIR, 'geoinfo', 'geolite')
 
-
-
 MEMCACHED_HOST = ('127.0.0.1', 11211)
-
-
-
 
 SOCIAL_AUTH_FACEBOOK_SCOPE = ['email']
 

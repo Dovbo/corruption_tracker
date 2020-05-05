@@ -25,7 +25,8 @@ class Moderator(models.Model):
 
     """
 
-    show_claims = MultiSelectField(choices=STATUSES, max_length=200,
+    show_claims = MultiSelectField(
+        choices=STATUSES, max_length=200,
         default='not_moderated,suspicious,anonymous,valid')
 
     # memcached settings
@@ -49,7 +50,7 @@ class Moderator(models.Model):
 
     @classmethod
     def allowed_statuses(cls):
-        return cls.objects.get(id=1).show_claims
+        return list(cls.objects.get(id=1).show_claims)
 
 
 class OrganizationType(models.Model):
@@ -98,7 +99,8 @@ class AddressException(Exception):
 class Organization(models.Model):
     name = models.CharField(max_length=255)
     url = models.URLField(null=True, blank=True)
-    org_type = models.ForeignKey(OrganizationType, null=True, blank=True)
+    org_type = models.ForeignKey(
+        OrganizationType, null=True, blank=True, on_delete=models.DO_NOTHING)
 
     is_verified = models.BooleanField(default=True)
     updated = models.DateTimeField(auto_now=True)
@@ -167,11 +169,12 @@ class Claim(models.Model):
     text = models.CharField(max_length=2550)
     created = models.DateTimeField(default=datetime.datetime.now)
     live = models.BooleanField(default=False)
-    organization = models.ForeignKey(Organization)
+    organization = models.ForeignKey(Organization, on_delete=models.CASCADE)
     servant = models.CharField(max_length=550)
-    complainer = models.ForeignKey(User, null=True, blank=True, default=None)
+    complainer = models.ForeignKey(
+        User, null=True, blank=True, default=None, on_delete=models.DO_NOTHING)
     claim_type = models.ForeignKey(ClaimType, null=True, blank=True,
-                                   default=None)    
+                                   default=None,on_delete=models.DO_NOTHING)
     moderation = models.CharField(choices=STATUSES, max_length=50,
                                   default='not_moderated')
     bribe = models.IntegerField(blank=True, null=True)
